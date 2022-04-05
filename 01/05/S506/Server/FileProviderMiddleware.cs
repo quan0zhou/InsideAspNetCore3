@@ -1,8 +1,10 @@
 ﻿using HttpFileSystem;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.FileProviders.Physical;
 using Newtonsoft.Json;
 using System;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace Server
@@ -32,7 +34,16 @@ namespace Server
             }
             else
             {
-                await context.Response.SendFileAsync(_fileProvider.GetFileInfo(context.Request.Path));
+                var file = _fileProvider.GetFileInfo(context.Request.Path);
+                if (file.Exists)
+                {
+                    await context.Response.SendFileAsync(file);
+                }
+                else
+                {
+                    await context.Response.WriteAsync("Not found file");
+                }
+         
             }
         }
 
